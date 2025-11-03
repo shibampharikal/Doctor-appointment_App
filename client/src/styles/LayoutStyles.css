@@ -1,0 +1,191 @@
+/* ==============================
+   MAIN CONTAINER
+   ============================== */
+.main {
+    height: 100vh;
+    background: #f4f6f8;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    font-family: "Poppins", sans-serif;
+    color: #333;
+    overflow: hidden;
+}
+
+/* ==============================
+   LAYOUT CONTAINER
+   ============================== */
+.layout {
+    display: flex;
+    width: 100%;
+    max-width: 1400px;
+    height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* ==============================
+   SIDEBAR
+   ============================== */
+.sidebar {
+    width: 280px;
+    background: linear-gradient(180deg, #1f1c2c 0%, #928dab 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 25px 20px;
+    box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.menu-item {
+    padding: 12px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.menu-item a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+}
+
+.menu-item i {
+    font-size: 1.2rem;
+    margin: 0 15px;
+}
+
+.active {
+    background-color: white;
+    padding: 10px;
+}
+
+.active a,
+.active i {
+    color: rgb(51, 1, 1);
+}
+
+.menu-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateX(4px);
+}
+
+/* ==============================
+   CONTENT SECTION
+   ============================== */
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+}
+
+/* ==============================
+   HEADER BAR (TOP SECTION)
+   ============================== */
+.header {
+    height: 60px;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Left and right separation */
+    padding: 0 25px;
+    font-weight: 500;
+    color: #1f1c2c;
+}
+
+.header-left h3 {
+    font-size: 1.3rem;
+    color: #1f1c2c;
+    font-weight: 600;
+}
+
+/* Right side: bell icon + username */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-right i {
+    font-size: 1.2rem;
+    color: #555;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.header-right i:hover {
+    color: #1f1c2c;
+}
+
+.header-right a {
+    text-decoration: none;
+    font-size: 1.1rem;
+    color: blue;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+/* ==============================
+   MAIN BODY
+   ============================== */
+.body {
+    flex: 1;
+    background: #fafbfc;
+    padding: 25px;
+    overflow-y: auto;
+    border-top: 1px solid #eee;
+}
+
+/* ==============================
+   UTILITIES
+   ============================== */
+.button-primary {
+    background: #1f1c2c;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.button-primary:hover {
+    background: #3a354b;
+}
+
+/* Scrollbar cleanup */
+.body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.body::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+
+.body::-webkit-scrollbar-thumb:hover {
+    background-color: #999;
+}
