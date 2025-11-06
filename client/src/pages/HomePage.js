@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Layout from "../components/Layout";
+import { Row } from "antd";
+import DoctorList from "../components/DoctorList.js";
 
 const HomePage = () => {
-  const [user, setUser] = useState(null);
+  const [doctors, setDoctor] = useState([]);
 
-  // Function to fetch user data
-  const fetchUserData = async () => {
+  // Function to fetch doctor data
+  const fetchDoctorData = async () => {
     try {
       const token = localStorage.getItem("token"); // get token from login
       if (!token) return;
 
-      const res = await axios.post(
-        "/api/v1/user/getUserData",
-        {}, // empty body
+      const res = await axios.get(
+        "/api/v1/user/getAllDoctors", // empty body
         {
           headers: {
             Authorization: `Bearer ${token}`, // send token in header
@@ -22,27 +23,28 @@ const HomePage = () => {
       );
 
       if (res.data.success) {
-        setUser(res.data.data); // store user info
+        setDoctor(res.data.data); // store doctor info
       } else {
         console.log("Auth failed:", res.data.message);
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("Error fetching doctor data:", error);
     }
   };
 
   // Call it on component mount
   useEffect(() => {
-    fetchUserData();
+    fetchDoctorData();
   }, []);
 
   return (
     <Layout>
-      {user ? (
-        <h1>Welcome, {user.name}</h1>
-      ) : (
-        <h1>Loading user data...</h1>
-      )}
+      <h1 className="text-center">Home Page</h1>
+      <Row>
+        {doctors && doctors.map((doctor) => (
+          <DoctorList key={doctor._id} doctor={doctor} />
+        ))}
+      </Row>
     </Layout>
   );
 };

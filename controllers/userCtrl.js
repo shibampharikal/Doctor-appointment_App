@@ -2,6 +2,7 @@ const userModel = require("../models/userModels");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const doctorModel = require("../models/doctorModel");
+const appointmentModel = require("../models/appointmentModel");
 
 // REGISTER CONTROLLER
 const registerController = async (req, res) => {
@@ -167,6 +168,34 @@ const deleteAllNotificationController = async (req, res) => {
   }
 };
 
+const getAllDoctorsController = async (req, res) => {
+    try {
+        const doctors = await doctorModel.find({status: 'approved'});
+        res.status(200).json({ message: 'All doctors fetched successfully', success:true, data: doctors });
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error fetching all doctors', error: error , success:false });
+    }
+};
+
+const bookAppointmentController = async (req,res) => {
+  try {
+    req.body.status = "pending";
+    const newAppointment = new appointmentModel(req.body);
+    await newAppointment.save();
+
+    const doctor = await doctorModel.findById(req.body.doctorId);
+    doctor.notification.push({
+      type: "new-appointment-request",
+      message: `A new appointment request from ${req.body.userInfo.name}`,
+      onClickPath: "/doctor/appointments",
+    });
+    await user.save();
+    res.status(200).json({ message: 'Appointment booked successfully', success:true });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error booking appointment', error: error , success:false });
+  }
+}
+
 module.exports = {
   registerController,
   loginController,
@@ -174,4 +203,6 @@ module.exports = {
   applyDoctorController,
   getAllNotificationController,
   deleteAllNotificationController,
+  getAllDoctorsController,
+  bookAppointmentController
 };

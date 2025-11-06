@@ -11,7 +11,7 @@ const connectDB = async () => {
     });
     console.log(`✅ MongoDB Connected: ${mongoose.connection.host}`.bgGreen.white);
   } catch (error) {
-    console.log(`❌ MongoDB Connection Error: ${error}`.bgRed.white);
+    console.log(`MongoDB Connection Error: ${error}`.bgRed.white);
     process.exit(1);
   }
 };

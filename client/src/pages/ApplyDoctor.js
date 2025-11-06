@@ -5,7 +5,7 @@ import {useSelector,useDispatch} from 'react-redux';
 import{useNavigate} from 'react-router-dom';
 import { hideLoading, showLoading } from '../redux/features/alertSlice';
 import axios from 'axios';
-
+import moment from 'moment';
 const ApplyDoctor = () => {
   // Handle form submission
   const {user} = useSelector(state => state.user)
@@ -16,17 +16,22 @@ const ApplyDoctor = () => {
     console.log('Form Values:', values);
     try {
         dispatch(showLoading())
-        const res= await axios.post('/api/v1/user/apply-doctor',{...values,userId:user._id},{
+        const res= await axios.post('/api/v1/user/apply-doctor',{...values,userId:user._id,
+          timing:[
+            moment(values.timing[0]).format("HH:mm"),
+            moment(values.timing[1]).format("HH:mm")
+          ]
+        },{
           headers:{
              Authorization:`Bearer ${localStorage.getItem('token')}`
           }
         });
       dispatch(hideLoading());
       if(res.data.success){
-        message.success(res.data.success);
+        message.success(res.data.message);
         navigate('/');
       }else{
-        message.error(res.data.success);
+        message.error(res.data.message);
       }
     } catch (error) {
         dispatch(hideLoading());
