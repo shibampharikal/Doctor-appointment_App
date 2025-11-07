@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const doctorModel = require("../models/doctorModel");
 const appointmentModel = require("../models/appointmentModel");
+const moment = require("moment");
 
 // REGISTER CONTROLLER
 const registerController = async (req, res) => {
@@ -179,20 +180,58 @@ const getAllDoctorsController = async (req, res) => {
 
 const bookAppointmentController = async (req,res) => {
   try {
+    if (req.body.date) {
+      req.body.date = moment(req.body.date,'DD-MM-YYYY').toISOString();
+    }
+    if (req.body.time) {
+      req.body.time = moment(req.body.time,'HH:mm').toISOString();
+    }
+
     req.body.status = "pending";
     const newAppointment = new appointmentModel(req.body);
     await newAppointment.save();
 
-    const doctor = await doctorModel.findById(req.body.doctorId);
-    doctor.notification.push({
+    const user = await userModel.findOne({_id: req.body.doctorInfo.userId});
+
+    const username = req.body.userInfo.name || "";
+    user.notification.push({
       type: "new-appointment-request",
-      message: `A new appointment request from ${req.body.userInfo.name}`,
+      message: `A new appointment request from ${username}`,
       onClickPath: "/doctor/appointments",
     });
     await user.save();
+
     res.status(200).json({ message: 'Appointment booked successfully', success:true });
   } catch (error) {
     res.status(500).json({ message: 'Server Error booking appointment', error: error , success:false });
+  }
+}
+
+const checkAvailabilityController = async (req,res) => {
+  try {
+    const date = moment(req.body.date,'DD-MM-YYYY').toISOString();
+    const fromtime = moment(req.body.time,'HH:mm').toISOString();
+    const totime = moment(req.body.time,'HH:mm').add(1,'hours').toISOString();
+    const doctorId = req.body.doctorId;
+
+    const appointments = await appointmentModel.find({
+      doctorId,
+      date,
+      time:{
+        $gte: fromtime,
+        $lte: totime
+      },
+      status: "approved"
+    });
+
+    if(appointments.length > 0){
+      return res.status(200).json({ message: 'Doctor is not available at this time', success:true });
+    }
+    res.status(200).json({ message: 'Doctor is available at this time', success:true });
+  } catch (error) {
+    console.log(error);
+    
+    res.status(500).json({ message: 'Server Error checking availability', error: error , success:false });
   }
 }
 
@@ -204,5 +243,6 @@ module.exports = {
   getAllNotificationController,
   deleteAllNotificationController,
   getAllDoctorsController,
-  bookAppointmentController
+  bookAppointmentController,
+  checkAvailabilityController
 };

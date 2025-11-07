@@ -14,7 +14,7 @@ function BookingPage() {
   const [doctor, setDoctor] = useState(null);
   const params= useParams();
   const [date, setDate] = useState(null);
-  const [time, setTime] = useState([null, null]);
+  const [time, setTime] = useState(null);
   const [isAvailable, setIsAvailable] = useState(false);
   const dispatch = useDispatch();
 
@@ -35,6 +35,8 @@ function BookingPage() {
       );
 
       if (res.data.success) {
+        console.log(res.data);
+        
         setDoctor(res.data.data); // store doctor info
       } else {
         console.log("Auth failed:", res.data.message);
@@ -46,15 +48,25 @@ function BookingPage() {
 
   const handleBooking = async() => {
     try {
-        dispatch(showLoading);
-        const res = axios.post("/api/v1/user/book-appointment",
+        if(!date || !time) {
+            return message.error('Please select both date and time');
+        }
+        if(!isAvailable) {
+            return message.error('Please check availability first');
+        }
+
+        dispatch(showLoading());
+        const res = await axios.post("/api/v1/user/book-appointment",
             {
-                userId:user._id,
-                doctorId:params.doctorId,
-                doctorInfo:doctor,
-                date:date,
-                userInfo:user,
-                time:time,
+                userId: user._id,
+                doctorId: params.doctorId,
+                doctorInfo: doctor,
+                userInfo: {
+                    ...user,
+                    name: user.name || `${user.firstName} ${user.lastName}`.trim()
+                },
+                date: moment(date, 'DD-MM-YYYY').format('DD-MM-YYYY'),
+                time: moment(time, 'HH:mm').format('HH:mm'),
             },
             {
                 headers:{
@@ -63,11 +75,51 @@ function BookingPage() {
             }
         );
         dispatch(hideLoading());
-        if(res.data.success)
+        
+        if(res.data.success) {
             message.success(res.data.message);
+        } else {
+            message.error(res.data.message);
+        }
     } catch (error) {
         dispatch(hideLoading());
-        console.error("Error booking appointment: ",error);
+        console.error("Error booking appointment: ", error);
+        message.error(error.response?.data?.message || 'Error booking appointment');
+    }
+  }
+
+  const handleAvaibility = async ()=>{
+    try {
+      if(!date || !time) {
+        return message.error('Please select both date and time');
+      }
+
+      dispatch(showLoading());
+      const res = await axios.post("/api/v1/user/check-availability",
+          {
+              doctorId: params.doctorId,
+              date: moment(date, 'DD-MM-YYYY').format('DD-MM-YYYY'),
+              time: moment(time, 'HH:mm').format('HH:mm')
+          },
+          {
+              headers:{
+                  Authorization: `Bearer ${localStorage.getItem("token")}`
+              }
+          }
+      );
+      dispatch(hideLoading());
+      if(res.data.success){
+        setIsAvailable(true);
+        message.success(res.data.message);
+      }else{
+        setIsAvailable(false);
+        message.error(res.data.message);
+      }
+    } catch (error) {
+      dispatch(hideLoading());
+      console.error("Error checking availability: ",error);
+      message.error(error.response?.data?.message || 'Error checking availability');
+      setIsAvailable(false);
     }
   }
 
@@ -86,13 +138,19 @@ function BookingPage() {
                     <h4>Timings: {doctor.timing[0]} - {doctor.timing[1]}</h4>
                     <div className='d-flex flex-column w-50'>
                         <DatePicker className='mb-2' format='DD-MM-YYYY'
-                        onChange={(value)=>setDate(moment(value).format("DD-MM-YYYY"))}
+                        onChange={(value)=>{
+                          //setIsAvailable(false);
+                          setDate(moment(value).format("DD-MM-YYYY"))
+                        }}
                         />
                         <TimePicker className='mb-2' format='HH:mm'
-                        onChange={(value)=>setTime(moment(value).format("HH:mm"))}
+                        onChange={(value)=>{
+                          //setIsAvailable(false)
+                          setTime(moment(value).format("HH:mm"))
+                        }}
                         />
-                        <button className='btn btn-primary mt-3'>Check Availability</button>
-                        <button className='btn btn-dark mt-3'
+                        <button className='btn btn-primary mt-3' onClick={handleAvaibility}>Check Availability</button>
+                         <button className='btn btn-dark mt-3'
                         onClick={handleBooking}
                         >Book Now</button>
                     </div>
