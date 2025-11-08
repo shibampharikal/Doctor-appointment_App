@@ -235,6 +235,18 @@ const checkAvailabilityController = async (req,res) => {
   }
 }
 
+const appointmentListController = async (req,res) => {
+  try {
+    const appointments = await appointmentModel.find({userId: req.body.userId});
+    if (!appointments) {
+      return res.status(404).json({ message: 'No appointments found for this user', success:true });
+    }
+    res.status(200).json({ message: 'User appointments fetched successfully', success:true, data: appointments });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error fetching user appointments', error: error , success:false });
+  }
+}
+
 module.exports = {
   registerController,
   loginController,
@@ -244,5 +256,6 @@ module.exports = {
   deleteAllNotificationController,
   getAllDoctorsController,
   bookAppointmentController,
-  checkAvailabilityController
+  checkAvailabilityController,
+  appointmentListController
 };

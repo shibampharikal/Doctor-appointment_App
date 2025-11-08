@@ -15,9 +15,9 @@ const Login = () => {
     try {
       dispatch(showLoading());
       const res = await axios.post("/api/v1/user/login",values);
-      window.location.reload();
       dispatch(hideLoading());
       if(res.data.success){
+        // store token before navigation so subsequent requests include it
         localStorage.setItem("token",res.data.token);
         message.success("Login Successfully");
         navigate("/");

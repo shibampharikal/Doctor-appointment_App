@@ -61,10 +61,7 @@ function BookingPage() {
                 userId: user._id,
                 doctorId: params.doctorId,
                 doctorInfo: doctor,
-                userInfo: {
-                    ...user,
-                    name: user.name || `${user.firstName} ${user.lastName}`.trim()
-                },
+                userInfo: user,
                 date: moment(date, 'DD-MM-YYYY').format('DD-MM-YYYY'),
                 time: moment(time, 'HH:mm').format('HH:mm'),
             },
