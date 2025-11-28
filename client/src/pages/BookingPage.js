@@ -62,8 +62,8 @@ function BookingPage() {
                 doctorId: params.doctorId,
                 doctorInfo: doctor,
                 userInfo: user,
-                date: moment(date, 'DD-MM-YYYY').format('DD-MM-YYYY'),
-                time: time // time is already formatted as 'HH:mm' from state
+                date: date ? date.format("DD-MM-YYYY") : null,
+                time: time ? time.format("HH:mm") : null // time is already formatted as 'HH:mm' from state
             },
             {
                 headers:{
@@ -95,8 +95,8 @@ function BookingPage() {
       const res = await axios.post("/api/v1/user/check-availability",
           {
               doctorId: params.doctorId,
-              date: moment(date, 'DD-MM-YYYY').format('DD-MM-YYYY'),
-              time: time // time is already formatted as 'HH:mm' from state
+              date: date ? date.format("DD-MM-YYYY") : null,
+              time: time ? time.format("HH:mm") : null // time is already formatted as 'HH:mm' from state
           },
           {
               headers:{
@@ -137,13 +137,13 @@ function BookingPage() {
                         <DatePicker className='mb-2' format='DD-MM-YYYY'
                         onChange={(value)=>{
                           //setIsAvailable(false);
-                          setDate(moment(value).format("DD-MM-YYYY"))
+                          setDate(value)
                         }}
                         />
                         <TimePicker className='mb-2' format='HH:mm'
                         onChange={(value)=>{
                           //setIsAvailable(false)
-                          setTime(moment(value).format('HH:mm'))
+                          setTime(value)
                         }}
                         />
                         <button className='btn btn-primary mt-3' onClick={handleAvaibility}>Check Availability</button>
