@@ -1,3 +1,4 @@
+
 export const userMenu =[
     {
          name:'Home',
@@ -16,7 +17,7 @@ export const userMenu =[
     },
     {
         name:'Profile',
-        path:'/profile',
+        path:'/user/profile/:id',
         icon:"fa-solid fa-user",
     },
    

@@ -247,6 +247,28 @@ const appointmentListController = async (req,res) => {
   }
 }
 
+// UPDATE USER PROFILE
+const updateUserProfileController = async (req, res) => {
+  try {
+    const { userId, name, email, phone } = req.body;
+    if (!userId) return res.status(400).json({ success: false, message: 'userId is required' });
+
+    const update = {};
+    if (name) update.name = name;
+    if (email) update.email = email;
+    if (phone) update.phone = phone;
+
+    const user = await userModel.findByIdAndUpdate(userId, update, { new: true });
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    user.password = undefined;
+    res.status(200).json({ success: true, message: 'Profile updated successfully', data: user });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: 'Error updating profile', error });
+  }
+}
+
 module.exports = {
   registerController,
   loginController,
@@ -258,4 +280,5 @@ module.exports = {
   bookAppointmentController,
   checkAvailabilityController,
   appointmentListController
+  , updateUserProfileController
 };

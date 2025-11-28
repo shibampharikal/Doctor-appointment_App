@@ -6,6 +6,7 @@ const {
   applyDoctorController,
   getAllNotificationController,
   deleteAllNotificationController,
+  updateUserProfileController,
   getAllDoctorsController,
   bookAppointmentController,
   checkAvailabilityController,
@@ -19,6 +20,8 @@ const router = express.Router();
 router.post("/login", loginController);
 router.post("/register", registerController);
 router.post("/getUserData", authMiddleware, authController);
+// update profile
+router.post('/updateProfile', authMiddleware, updateUserProfileController);
 router.post("/apply-doctor", authMiddleware, applyDoctorController);
 router.post("/get-all-notification", authMiddleware, getAllNotificationController);
 router.post("/delete-all-notification", authMiddleware, deleteAllNotificationController);

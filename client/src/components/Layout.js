@@ -1,6 +1,6 @@
 import React from 'react';
 import "../styles/LayoutStyles.css";
-import { adminMenu, userMenu } from '../Data/data';
+import { adminMenu } from '../Data/data';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { message, Badge } from 'antd';
@@ -16,6 +16,30 @@ const Layout = ({ children }) => {
     message.success("Logout Successfully");
     navigate("/login");
   };
+
+const userMenu =[
+    {
+         name:'Home',
+         path:'/',
+         icon:"fa-solid fa-house",
+    },
+    {
+        name:'Appointments',
+        path:"/appointments",
+        icon:"fa-solid fa-list",
+    },
+    {
+        name:'Apply Doctor',
+        path:'/apply-doctor',
+        icon:"fa-solid fa-user-doctor",
+    },
+    {
+        name:'Profile',
+        path:`/user/profile/${user?._id}`,
+        icon:"fa-solid fa-user",
+    },
+   
+];
 
 
 //========== doctor menu ==========
@@ -100,7 +124,7 @@ const doctorMenu =[
                   ></i>
                 </Badge>
 
-               <Link to={`/doctor/profile/${user?._id}`}>{user?.name}</Link>
+               <Link to={`/user/profile/${user?._id}`}>{user?.name}</Link>
               </div>
             </div>
 
