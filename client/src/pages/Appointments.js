@@ -7,7 +7,8 @@ import { Table } from 'antd';
 
 const Appointments = () => {
 
-    const [appointments, setAppointments] = useState([])
+    const [appointments, setAppointments] = useState([]);
+    const [docData, setDocData] = useState({});
     const {user} = useSelector(state => state.user);
     const dispatch = useDispatch();
 
@@ -24,12 +25,55 @@ const Appointments = () => {
                         }
                     }
                 );
-                //dispatch(hideLoading());
                 const data = response.data;
-                console.log(data.data);
-                
+                // dispatch(hideLoading());
                 if (data.success) {
-                    setAppointments(data.data);
+                    const raw = data.data || [];
+
+                    // collect unique doctorIds
+                    const doctorIds = [...new Set(raw.map(a => a.doctorId).filter(Boolean))];
+                    const doctorMap = {};
+
+                    // fetch doctor details for each id
+                    await Promise.all(doctorIds.map(async (id) => {
+                        try {
+                            const docRes = await axios.post('/api/v1/doctor/getDoctorById', { doctorId: id }, {
+                                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                            });
+                            if (docRes.data?.success && docRes.data.data) {
+                                doctorMap[id] = docRes.data.data;
+                            }
+                        } catch (e) {
+                            // ignore per-doctor errors
+                        }
+                    }));
+
+                    // enrich appointments with doctorName and phone
+                    const enriched = raw.map((apt) => {
+                        let name = 'Dr. Unknown';
+                        let phone = '';
+                        // prefer map
+                        if (apt.doctorId && doctorMap[apt.doctorId]) {
+                            const d = doctorMap[apt.doctorId];
+                            name = `${d.firstName || ''} ${d.lastName || ''}`.trim() || name;
+                            phone = d.phone || '';
+                        } else if (apt.doctorInfo) {
+                            try {
+                                const info = typeof apt.doctorInfo === 'string' ? JSON.parse(apt.doctorInfo) : apt.doctorInfo;
+                                if (info) {
+                                    name = (info.firstName || info.name || '') + (info.lastName ? ` ${info.lastName}` : '');
+                                    name = name.trim() || name;
+                                    phone = info.phone || phone;
+                                }
+                            } catch (e) {
+                                // ignore parse errors
+                            }
+                        }
+                        return { ...apt, doctorName: name, doctorPhone: phone };
+                    });
+
+                    setAppointments(enriched);
+                    setDocData(doctorMap);
                 } else {
                     console.error(data.message);
                 }
@@ -54,14 +98,14 @@ const Appointments = () => {
             title:"Name",
             dataIndex:"name",
             render:(text,record) => (<span>
-                {record.doctorInfo.firstName} {record.doctorInfo.lastName}
+                {record.doctorName || (record.doctorInfo && (record.doctorInfo.firstName ? `${record.doctorInfo.firstName} ${record.doctorInfo.lastName || ''}` : record.doctorInfo.name)) || 'Dr. Unknown'}
             </span>)
         },
         {
             title:"Phone",
             dataIndex:"phone",
             render:(text,record) => (<span>
-                {record.doctorInfo.phone}
+                {record.doctorPhone || (record.doctorInfo && (record.doctorInfo.phone)) || ''}
             </span>)
         },
         {
