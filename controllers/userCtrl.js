@@ -221,17 +221,16 @@ const checkAvailabilityController = async (req,res) => {
         $gte: fromtime,
         $lte: totime
       },
-      status: "approved"
     });
 
     if(appointments.length > 0){
-      return res.status(200).json({ message: 'Doctor is not available at this time', success:true });
+      return res.status(200).json({ message: 'Doctor is not available at this time', success:false });
     }
-    res.status(200).json({ message: 'Doctor is available at this time', success:true });
+    return res.status(200).json({ message: 'Doctor is available at this time', success:true });
   } catch (error) {
     console.log(error);
     
-    res.status(500).json({ message: 'Server Error checking availability', error: error , success:false });
+    return res.status(500).json({ message: 'Server Error checking availability', error: error , success:false });
   }
 }
 

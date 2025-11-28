@@ -62,8 +62,8 @@ function BookingPage() {
                 doctorId: params.doctorId,
                 doctorInfo: doctor,
                 userInfo: user,
-                date: date ? date.format("DD-MM-YYYY") : null,
-                time: time ? time.format("HH:mm") : null // time is already formatted as 'HH:mm' from state
+                date: date ? (typeof date === 'string' ? date : date.format("DD-MM-YYYY")) : null,
+                time: time ? (typeof time === 'string' ? time : time.format("HH:mm")) : null
             },
             {
                 headers:{
@@ -74,9 +74,9 @@ function BookingPage() {
         dispatch(hideLoading());
         
         if(res.data.success) {
-            message.success(res.data.message);
+            message.success(res.data.message || 'Appointment booked successfully');
         } else {
-            message.error(res.data.message);
+            message.error(res.data.message || 'Failed to book appointment');
         }
     } catch (error) {
         dispatch(hideLoading());
@@ -91,12 +91,22 @@ function BookingPage() {
         return message.error('Please select both date and time');
       }
 
+      const selectedTime = time ? (typeof time === 'string' ? time : time.format("HH:mm")) : null;
+      if(selectedTime && (selectedTime < doctor.timing[0] || selectedTime > doctor.timing[1])) {
+        return message.error(`Please select time between ${doctor.timing[0]} - ${doctor.timing[1]}`);
+      }
+      // const selectedDate = date ? (typeof date === 'string' ? date : date.format("DD-MM-YYYY")) : null;
+      // if(selectedDate && (selectedDate < moment().format("DD-MM-YYYY"))) {
+      //   return message.error(`Please select a valid date`);
+      // }
+
+
       dispatch(showLoading());
       const res = await axios.post("/api/v1/user/check-availability",
           {
               doctorId: params.doctorId,
-              date: date ? date.format("DD-MM-YYYY") : null,
-              time: time ? time.format("HH:mm") : null // time is already formatted as 'HH:mm' from state
+              date: date ? (typeof date === 'string' ? date : date.format("DD-MM-YYYY")) : null,
+              time: time ? (typeof time === 'string' ? time : time.format("HH:mm")) : null
           },
           {
               headers:{
@@ -107,10 +117,10 @@ function BookingPage() {
       dispatch(hideLoading());
       if(res.data.success){
         setIsAvailable(true);
-        message.success(res.data.message);
+        message.success(res.data.message || 'Doctor is available');
       }else{
         setIsAvailable(false);
-        message.error(res.data.message);
+        message.error(res.data.message || 'Doctor is not available');
       }
     } catch (error) {
       dispatch(hideLoading());
@@ -135,6 +145,7 @@ function BookingPage() {
                     <h4>Timings: {doctor.timing[0]} - {doctor.timing[1]}</h4>
                     <div className='d-flex flex-column w-50'>
                         <DatePicker className='mb-2' format='DD-MM-YYYY'
+                        disabledDate={(current) => current && current < moment().startOf('day')}
                         onChange={(value)=>{
                           //setIsAvailable(false);
                           setDate(value)
@@ -147,9 +158,9 @@ function BookingPage() {
                         }}
                         />
                         <button className='btn btn-primary mt-3' onClick={handleAvaibility}>Check Availability</button>
-                         <button className='btn btn-dark mt-3'
+                        { isAvailable && <button className='btn btn-dark mt-3'
                         onClick={handleBooking}
-                        >Book Now</button>
+                        >Book Now</button>}
                     </div>
                 </div>
             )
