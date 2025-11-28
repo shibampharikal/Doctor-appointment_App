@@ -63,7 +63,7 @@ function BookingPage() {
                 doctorInfo: doctor,
                 userInfo: user,
                 date: moment(date, 'DD-MM-YYYY').format('DD-MM-YYYY'),
-                time: moment(time, 'HH:mm').format('HH:mm'),
+                time: time // time is already formatted as 'HH:mm' from state
             },
             {
                 headers:{
@@ -96,7 +96,7 @@ function BookingPage() {
           {
               doctorId: params.doctorId,
               date: moment(date, 'DD-MM-YYYY').format('DD-MM-YYYY'),
-              time: moment(time, 'HH:mm').format('HH:mm')
+              time: time // time is already formatted as 'HH:mm' from state
           },
           {
               headers:{
@@ -143,7 +143,7 @@ function BookingPage() {
                         <TimePicker className='mb-2' format='HH:mm'
                         onChange={(value)=>{
                           //setIsAvailable(false)
-                          setTime(moment(value).format("HH:mm"))
+                          setTime(moment(value).format('HH:mm'))
                         }}
                         />
                         <button className='btn btn-primary mt-3' onClick={handleAvaibility}>Check Availability</button>

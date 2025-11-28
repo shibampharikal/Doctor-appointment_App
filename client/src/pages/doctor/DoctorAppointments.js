@@ -8,9 +8,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const DoctorAppointments = () => {
 
-    const [appointments, setAppointments] = useState([])
+    const [appointments, setAppointments] = useState([]);
         const {user} = useSelector(state => state.user);
         const dispatch = useDispatch();
+    //const [status , setStatus] = useState("");
     
         const fetchAppointments = async () => {
                 try {
@@ -31,6 +32,7 @@ const DoctorAppointments = () => {
                     
                     if (data.success) {
                         setAppointments(data.data);
+                        //setStatus(data.status);
                     } else {
                         console.error(data.message);
                     }
@@ -42,7 +44,7 @@ const DoctorAppointments = () => {
     
     
         useEffect(() => {
-            if(user && user._id)
+            //if(user && user._id)
                 fetchAppointments();
         }, [user]);
 
@@ -61,7 +63,8 @@ const DoctorAppointments = () => {
                     message.success('Appointment status updated successfully');
                     fetchAppointments();
                 } else {
-                    console.error(data.message);
+                    message.error('Failed to update appointment status');
+                    fetchAppointments();
                 }
             } catch (error) {
                 console.log(error);
@@ -107,10 +110,13 @@ const DoctorAppointments = () => {
                 <div className='d-flex'>
                     {record.status === 'pending' && (
                         <div>
-                            <button className='btn btn-success'
+                            <button style={{
+                                padding:8,borderRadius:8,cursor:'pointer',border: 'none',fontWeight:600 , background: 'blue',color: 'white'}}
                             onClick={async() => handleStatus(record,'approved')}
                         >Approved</button>
-                        <button className='btn btn-danger ms-2'
+                        <button className='ms-2'
+                        style={{
+                                padding:8,borderRadius:8,cursor:'pointer',border: 'none',fontWeight:600 , background: 'red',color: 'white'}}
                             onClick={async() => handleStatus(record,'rejected')}
                         >Reject</button>
                         </div>
