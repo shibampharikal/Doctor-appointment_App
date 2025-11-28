@@ -3,9 +3,11 @@ import axios from "axios";
 import Layout from "../components/Layout";
 import { Row } from "antd";
 import DoctorList from "../components/DoctorList.js";
+import { useSelector } from 'react-redux';
 
 const HomePage = () => {
   const [doctors, setDoctor] = useState([]);
+  const {user} = useSelector((state) => state.user) || {};
 
   // Function to fetch doctor data
   const fetchDoctorData = async () => {
@@ -41,9 +43,11 @@ const HomePage = () => {
     <Layout>
       <h1 className="text-center">Home Page</h1>
       <Row>
-        {doctors && doctors.map((doctor) => (
-          <DoctorList key={doctor._id} doctor={doctor} />
-        ))}
+        {doctors && doctors
+          .filter((d) => d.userId !== user?._id)
+          .map((doctor) => (
+            <DoctorList key={doctor._id} doctor={doctor} />
+          ))}
       </Row>
     </Layout>
   );
