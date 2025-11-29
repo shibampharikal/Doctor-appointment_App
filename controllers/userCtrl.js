@@ -246,6 +246,18 @@ const appointmentListController = async (req,res) => {
   }
 }
 
+// Get user by id (for doctors to view patient info)
+const getUserByIdController = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.body.userId).select('-password');
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: 'Error fetching user', error });
+  }
+}
+
 // UPDATE USER PROFILE
 const updateUserProfileController = async (req, res) => {
   try {
@@ -278,6 +290,7 @@ module.exports = {
   getAllDoctorsController,
   bookAppointmentController,
   checkAvailabilityController,
-  appointmentListController
-  , updateUserProfileController
+  appointmentListController,
+  getUserByIdController,
+  updateUserProfileController,
 };

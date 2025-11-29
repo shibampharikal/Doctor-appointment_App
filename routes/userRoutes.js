@@ -6,6 +6,7 @@ const {
   applyDoctorController,
   getAllNotificationController,
   deleteAllNotificationController,
+  getUserByIdController,
   updateUserProfileController,
   getAllDoctorsController,
   bookAppointmentController,
@@ -20,6 +21,8 @@ const router = express.Router();
 router.post("/login", loginController);
 router.post("/register", registerController);
 router.post("/getUserData", authMiddleware, authController);
+// get user by id
+router.post('/getUserById', authMiddleware, getUserByIdController);
 // update profile
 router.post('/updateProfile', authMiddleware, updateUserProfileController);
 router.post("/apply-doctor", authMiddleware, applyDoctorController);
