@@ -9,13 +9,20 @@ const [doctors,setDoctors] = useState([])
   
     const getDoctors = async() =>{
       try {
-        const res =await axios.get('/api/v1/admin/getAllDoctors',{
+        const res = await axios.get('/api/v1/admin/getAllDoctors',{
           headers:{
             Authorization:`Bearer ${localStorage.getItem("token")}`,
           },
         });
         if(res.data.success){
-          setDoctors(res.data.data);
+            // keep only one doctor entry per userId (unique users)
+            const all = res.data.data || [];
+            const uniqMap = all.reduce((acc, doc) => {
+              if (!acc[doc.userId]) acc[doc.userId] = doc;
+              return acc;
+            }, {});
+            const uniqueDoctors = Object.values(uniqMap);
+            setDoctors(uniqueDoctors);
         }
       } catch (error) {
         console.log(error);
@@ -68,11 +75,32 @@ const columns = [
     dataIndex:'action',
     render:(text,record) =>(
       <div className='d-flex'>
-        {record.status === "pending" ?(
-          <button className='btn btn-success' onClick={() =>handleAccountStatus(record,"approved")}>Approve</button>
-        ) :(
-          <button className='btn btn-danger' onClick={() =>handleAccountStatus(record,"rejected")} >Reject</button>
-        )}
+        
+          <button
+          style={{
+                  padding: 8,
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  border: "none",
+                  fontWeight: 600,
+                  background: "blue",
+                  color: "white",
+                  marginRight: '10px'
+                }} 
+           onClick={() =>handleAccountStatus(record,"approved")}>Approve</button>
+       
+          <button 
+          style={{
+                  padding: 8,
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  border: "none",
+                  fontWeight: 600,
+                  background: "red",
+                  color: "white",
+                }}
+          onClick={() =>handleAccountStatus(record,"rejected")} >Reject</button>
+        
       </div>
     ),
   },
