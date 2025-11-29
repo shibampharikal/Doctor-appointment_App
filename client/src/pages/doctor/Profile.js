@@ -12,6 +12,7 @@ const Profile = () => {
   const params = useParams();
   const dispatch =useDispatch();
   const navigate=useNavigate();
+  const [form] = Form.useForm();
   // update doc
   const handleFinish = async(values) => {
       console.log('Form Values:', values);
@@ -69,7 +70,7 @@ const Profile = () => {
     <Layout>
       <h1>Profile Page</h1>
       {doctor && (
-        <Form layout="vertical" onFinish={handleFinish} className="m-3" initialValues={{
+        <Form form={form} layout="vertical" onFinish={handleFinish} className="m-3" initialValues={{
           ...doctor,
           timing:[
             moment(doctor.timing[0],"HH:mm"),
@@ -138,7 +139,7 @@ const Profile = () => {
                  <Button 
                     type="primary" 
                     htmlType="submit" 
-                    size="small"
+                    size="Large"
                     style={{ padding: '10px 20px', fontSize: '15px', borderRadius: '6px' }}
                   >
                     Update Profile

@@ -17,12 +17,12 @@ const [doctors,setDoctors] = useState([])
         if(res.data.success){
             // keep only one doctor entry per userId (unique users)
             const all = res.data.data || [];
-            const uniqMap = all.reduce((acc, doc) => {
-              if (!acc[doc.userId]) acc[doc.userId] = doc;
-              return acc;
-            }, {});
-            const uniqueDoctors = Object.values(uniqMap);
-            setDoctors(uniqueDoctors);
+            // const uniqMap = all.reduce((acc, doc) => {
+            //   if (!acc[doc.userId]) acc[doc.userId] = doc;
+            //   return acc;
+            // }, {});
+            // const uniqueDoctors = Object.values(uniqMap);
+            setDoctors(all);
         }
       } catch (error) {
         console.log(error);

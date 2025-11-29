@@ -11,6 +11,7 @@ const ApplyDoctor = () => {
   const {user} = useSelector(state => state.user)
     const dispatch =useDispatch();
   const navigate=useNavigate();
+  const [form] = Form.useForm();
 
   const handleFinish = async(values) => {
     console.log('Form Values:', values);
@@ -18,8 +19,8 @@ const ApplyDoctor = () => {
         dispatch(showLoading())
         const res= await axios.post('/api/v1/user/apply-doctor',{...values,userId:user._id,
           timing:[
-            moment(values.timing[0]).format("HH:mm"),
-            moment(values.timing[1]).format("HH:mm")
+            values.timing[0].format("HH:mm"),
+            values.timing[1].format("HH:mm")
           ]
         },{
           headers:{
@@ -44,7 +45,9 @@ const ApplyDoctor = () => {
   return (
     <Layout>
       <h1 className="text-center">Apply Doctor</h1>
-      <Form layout="vertical" onFinish={handleFinish} className="m-3">
+      <Form
+      form={form}
+       layout="vertical" onFinish={handleFinish} className="m-3">
         <h4>Personal Details :</h4>
         <Row gutter={20}>
           <Col xs={24} md={12} lg={8}>
@@ -103,16 +106,16 @@ const ApplyDoctor = () => {
             </Form.Item>
           </Col>
           <Col xs={24} md={12} lg={8} ></Col>
-          <Col xs={24} md={12} lg={8} >
+        <Col xs={24} md={12} lg={8} >
          <Button 
             type="primary" 
             htmlType="submit" 
-            size="small"
+            size="Large"
             style={{ padding: '4px 20px', fontSize: '14px', borderRadius: '6px' }}
           >
             Submit
           </Button>
-          </Col>
+        </Col>
         </Row>
 
         
